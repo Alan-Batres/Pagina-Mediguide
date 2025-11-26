@@ -1,9 +1,10 @@
 import '../App.css'
+import logo from '../assets/logoMedguide_transparent.png'
 
 function Footer(){
     return(
         <div>
-            <img src='Link de Prueba' alt='LOGO'/>
+            <img src={logo} alt='Mediguide Logo' style={{height: '60px', width: 'auto'}}/>
             <h1>Centro Médico del Bosque</h1>
             <h2>Comunicate con Nosotros</h2>
             <button type='button'>Dudas y Sugerencias</button>
