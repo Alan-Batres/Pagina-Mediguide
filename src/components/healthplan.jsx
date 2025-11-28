@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import '../App.css';
 import logo from '../assets/logoMedguide_transparent.png';
+import { medicalDataEmitter } from '../utils/medicalDataContext';
 
 function HealthPlan(){
     const [medicalData, setMedicalData] = useState(null);
@@ -11,12 +12,20 @@ function HealthPlan(){
 
     useEffect(() => {
         fetchMedicalData();
+        
+        const unsubscribe = medicalDataEmitter.subscribe(() => {
+            console.log('Medical data updated, refreshing healthplan...');
+            fetchMedicalData();
+        });
+
+        return unsubscribe;
     }, []);
 
     const fetchMedicalData = async () => {
         try {
             console.log('Fetching medical data...');
-            const response = await fetch('/api/medical-info/latest');
+            const userId = localStorage.getItem('userId');
+            const response = await fetch(`http://localhost:3001/api/medical-info/latest?userId=${userId}`);
             const data = await response.json();
             
             console.log('Response status:', response.status);
@@ -43,7 +52,6 @@ function HealthPlan(){
         const plans = [];
         const detectedSymptoms = [];
 
-        // Análisis de Glucosa
         if (data.glucose < 70) {
             detectedSymptoms.push({
                 parameter: 'Glucosa',
@@ -93,7 +101,6 @@ function HealthPlan(){
             });
         }
 
-        // Análisis de Oxigenación (SpO₂)
         if (data.oxygen_blood < 90) {
             detectedSymptoms.push({
                 parameter: 'Saturación de Oxígeno (SpO₂)',
@@ -107,33 +114,53 @@ function HealthPlan(){
             });
         }
 
-        // Análisis de Presión Arterial
-        if (data.blood_pressure >= 130) {
-            const level = data.blood_pressure >= 180 ? 'EMERGENCIA - Crisis Hipertensiva' : 
-                         data.blood_pressure >= 140 ? 'HIPERTENSIÓN Etapa 2' : 'HIPERTENSIÓN Etapa 1';
+        const sys = data.blood_pressure_systolic;
+        const dia = data.blood_pressure_diastolic;
+        
+        let bpLevel = 'Normal';
+        let bpRisk = 'BAJO';
+        let bpSymptoms = [];
+        
+        if (sys >= 180 || dia >= 120) {
+            bpLevel = 'EMERGENCIA - Crisis Hipertensiva';
+            bpRisk = 'CRÍTICO';
+            bpSymptoms = ['Dolor de cabeza intenso', 'Sudoración', 'Ansiedad severa', 'Dolor torácico', 'Visión borrosa'];
+        } else if (sys >= 140 || dia >= 90) {
+            bpLevel = 'HIPERTENSIÓN Etapa 2';
+            bpRisk = 'ALTO';
+            bpSymptoms = ['A menudo asintomática', 'Cefalea ocasional', 'Visión borrosa', 'Fatiga'];
+        } else if (sys >= 130 || dia >= 80) {
+            bpLevel = 'HIPERTENSIÓN Etapa 1';
+            bpRisk = 'MEDIO';
+            bpSymptoms = ['Generalmente asintomática', 'Posible fatiga leve', 'Dolor de cabeza ocasional'];
+        }
+
+        if (bpRisk !== 'BAJO') {
             detectedSymptoms.push({
                 parameter: 'Presión Arterial',
-                level: level,
-                value: `${data.blood_pressure} mmHg`,
-                symptoms: ['A menudo asintomática (asesino silencioso)', 'Cefalea', 'Visión borrosa', 'Dolor torácico en casos severos'],
-                recommendations: data.blood_pressure >= 180 ?
-                    ['EMERGENCIA: Buscar atención médica inmediata', 'Permanecer acostado y calmado', 'No automedicarse'] :
-                    ['Reducir ingesta de sal a <2.3g/día', 'Aumentar ejercicio aeróbico', 'Reducir estrés', 'Iniciar medicación si médico lo indica'],
-                risk: data.blood_pressure >= 180 ? 'CRÍTICO' : 'ALTO'
+                level: bpLevel,
+                value: `${sys}/${dia} mmHg`,
+                systolic: `${sys} mmHg (Sistólica - Número superior)`,
+                diastolic: `${dia} mmHg (Diastólica - Número inferior)`,
+                symptoms: bpSymptoms,
+                recommendations: sys >= 180 || dia >= 120 ?
+                    ['⚠️ EMERGENCIA: Buscar atención médica inmediata', 'Permanecer acostado y calmado', 'No automedicarse', 'Llamar a emergencias'] :
+                    ['Reducir ingesta de sal a <2.3g/día', 'Aumentar ejercicio aeróbico (150 min/semana)', 'Reducir estrés con meditación', 'Limitar consumo de alcohol', 'Iniciar medicación si médico lo indica'],
+                risk: bpRisk
             });
             plans.push({
                 name: 'Plan de Control de Presión Arterial - 8 Semanas',
                 duration: 'Mensual',
                 activities: [
-                    'Semana 1-2: Mediciones diarias de PA',
-                    'Semana 3-4: Dieta DASH (baja en sodio)',
-                    'Semana 5-8: Ejercicio 150 min/semana + técnicas de relajación',
-                    'Consulta médica para ajustar medicamentos si es necesario'
+                    'Semana 1-2: Mediciones diarias de PA (mañana y noche)',
+                    'Semana 3-4: Dieta DASH - baja en sodio y rica en potasio',
+                    'Semana 5-6: Ejercicio aeróbico 150 min/semana',
+                    'Semana 7-8: Técnicas de relajación + seguimiento médico',
+                    'Consulta médica cada 2 semanas para ajustar medicamentos'
                 ]
             });
         }
 
-        // Análisis de Frecuencia Cardíaca
         if (data.heart_rate > 100) {
             detectedSymptoms.push({
                 parameter: 'Frecuencia Cardíaca',
@@ -164,7 +191,6 @@ function HealthPlan(){
             });
         }
 
-        // Análisis de Temperatura
         if (data.temperature >= 38) {
             const level = data.temperature >= 41 ? 'CRÍTICO - Hipertermia Peligrosa' : 
                          data.temperature >= 39.5 ? 'FIEBRE ALTA' : 'FIEBRE';
@@ -189,7 +215,6 @@ function HealthPlan(){
             });
         }
 
-        // Análisis de Frecuencia Respiratoria
         if (data.respiratory_rate > 20) {
             detectedSymptoms.push({
                 parameter: 'Frecuencia Respiratoria',
@@ -211,7 +236,6 @@ function HealthPlan(){
             });
         }
 
-        // Análisis de IMC (usando altura y peso)
         if (data.height && data.weight) {
             const imc = data.weight / (data.height * data.height);
             let imcStatus = '';
@@ -255,44 +279,38 @@ function HealthPlan(){
 
     return(
         <div className="health-plan-container">
-            <img src={logo} alt='Mediguide Logo' style={{height: '60px', width: 'auto'}}></img>
+            <img src={logo} alt='Mediguide Logo'></img>
             <h1>Nuestros Planes de Salud Personalizados</h1>
-            <p style={{fontStyle: 'italic', color: '#666'}}>⚠️ Descargo de responsabilidad: Esta información es educativa y NO reemplaza la consulta médica profesional. Consulta a un médico para diagnóstico y tratamiento.</p>
+            <p className="disclaimer">⚠️ Descargo de responsabilidad: Esta información es educativa y NO reemplaza la consulta médica profesional. Consulta a un médico para diagnóstico y tratamiento.</p>
 
-            {error && <div style={{color: 'red', padding: '10px', backgroundColor: '#ffe6e6', borderRadius: '5px'}}>{error}</div>}
+            {error && <div className="error-message">{error}</div>}
 
             {medicalData && (
                 <>
                     {/* Datos Médicos Actuales */}
-                    <section style={{backgroundColor: '#284259ff', padding: '15px', borderRadius: '8px', marginBottom: '20px'}}>
+                    <section className="medical-data-section">
                         <h2>📊 Tus Datos Médicos Actuales</h2>
-                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px'}}>
-                            <p><strong>Glucosa:</strong> {medicalData.glucose !== null && medicalData.glucose !== undefined ? `${medicalData.glucose} mg/dL` : 'N/A'}</p>
-                            <p><strong>SpO₂:</strong> {medicalData.oxygen_blood !== null && medicalData.oxygen_blood !== undefined ? `${medicalData.oxygen_blood}%` : 'N/A'}</p>
-                            <p><strong>Presión Arterial:</strong> {medicalData.blood_pressure !== null && medicalData.blood_pressure !== undefined ? `${medicalData.blood_pressure} mmHg` : 'N/A'}</p>
-                            <p><strong>Frecuencia Cardíaca:</strong> {medicalData.heart_rate !== null && medicalData.heart_rate !== undefined ? `${medicalData.heart_rate} lpm` : 'N/A'}</p>
-                            <p><strong>Temperatura:</strong> {medicalData.temperature !== null && medicalData.temperature !== undefined ? `${medicalData.temperature}°C` : 'N/A'}</p>
-                            <p><strong>Frecuencia Respiratoria:</strong> {medicalData.respiratory_rate !== null && medicalData.respiratory_rate !== undefined ? `${medicalData.respiratory_rate} resp/min` : 'N/A'}</p>
-                            <p><strong>Edad:</strong> {medicalData.age !== null && medicalData.age !== undefined ? `${medicalData.age} años` : 'N/A'}</p>
-                            <p><strong>Altura:</strong> {medicalData.height !== null && medicalData.height !== undefined ? `${medicalData.height} m` : 'N/A'}</p>
-                            <p><strong>Peso:</strong> {medicalData.weight !== null && medicalData.weight !== undefined ? `${medicalData.weight} kg` : 'N/A'}</p>
-                            <p><strong>Tipo de Sangre:</strong> {medicalData.blood_type !== null && medicalData.blood_type !== undefined ? medicalData.blood_type : 'N/A'}</p>
+                        <div className="medical-data-grid">
+                            <p className="medical-data-item"><strong>Glucosa:</strong> {medicalData.glucose !== null && medicalData.glucose !== undefined ? `${medicalData.glucose} mg/dL` : 'N/A'}</p>
+                            <p className="medical-data-item"><strong>SpO₂:</strong> {medicalData.oxygen_blood !== null && medicalData.oxygen_blood !== undefined ? `${medicalData.oxygen_blood}%` : 'N/A'}</p>
+                            <p className="medical-data-item"><strong>Presión Arterial:</strong> {medicalData.blood_pressure_systolic !== null && medicalData.blood_pressure_diastolic !== null ? `${medicalData.blood_pressure_systolic}/${medicalData.blood_pressure_diastolic} mmHg` : 'N/A'}</p>
+                            <p className="medical-data-item medical-data-detail">&nbsp;&nbsp;↳ Sistólica (número superior): {medicalData.blood_pressure_systolic} mmHg | Diastólica (número inferior): {medicalData.blood_pressure_diastolic} mmHg</p>
+                            <p className="medical-data-item"><strong>Frecuencia Cardíaca:</strong> {medicalData.heart_rate !== null && medicalData.heart_rate !== undefined ? `${medicalData.heart_rate} lpm` : 'N/A'}</p>
+                            <p className="medical-data-item"><strong>Temperatura:</strong> {medicalData.temperature !== null && medicalData.temperature !== undefined ? `${medicalData.temperature}°C` : 'N/A'}</p>
+                            <p className="medical-data-item"><strong>Frecuencia Respiratoria:</strong> {medicalData.respiratory_rate !== null && medicalData.respiratory_rate !== undefined ? `${medicalData.respiratory_rate} resp/min` : 'N/A'}</p>
+                            <p className="medical-data-item"><strong>Edad:</strong> {medicalData.age !== null && medicalData.age !== undefined ? `${medicalData.age} años` : 'N/A'}</p>
+                            <p className="medical-data-item"><strong>Altura:</strong> {medicalData.height !== null && medicalData.height !== undefined ? `${medicalData.height} m` : 'N/A'}</p>
+                            <p className="medical-data-item"><strong>Peso:</strong> {medicalData.weight !== null && medicalData.weight !== undefined ? `${medicalData.weight} kg` : 'N/A'}</p>
+                            <p className="medical-data-item"><strong>Tipo de Sangre:</strong> {medicalData.blood_type !== null && medicalData.blood_type !== undefined ? medicalData.blood_type : 'N/A'}</p>
                         </div>
                     </section>
 
                     {/* Síntomas y Alertas */}
                     {symptoms.length > 0 && (
-                        <section style={{marginBottom: '20px'}}>
+                        <section className="symptoms-section">
                             <h2>⚠️ Hallazgos Detectados ({symptoms.length})</h2>
                             {symptoms.map((item, index) => (
-                                <div key={index} style={{
-                                    border: `3px solid ${item.risk === 'CRÍTICO' ? '#d32f2f' : item.risk === 'ALTO' ? '#f57c00' : '#fbc02d'}`,
-                                    padding: '15px',
-                                    marginBottom: '15px',
-                                    borderRadius: '8px',
-                                    backgroundColor: item.risk === 'CRÍTICO' ? '#ffebee' : item.risk === 'ALTO' ? '#fff3e0' : '#fffde7',
-                                    color: '#000000'
-                                }}>
+                                <div key={index} className={`symptom-card symptom-${item.risk.toLowerCase()}`}>
                                     <h3>{item.parameter} - {item.level}</h3>
                                     <p><strong>Valor:</strong> {item.value}</p>
                                     <p><strong>Posibles síntomas:</strong> {item.symptoms.join(', ')}</p>
@@ -307,17 +325,10 @@ function HealthPlan(){
 
                     {/* Planes de Salud */}
                     {healthPlans.length > 0 && (
-                        <section>
+                        <section className="health-plans-section">
                             <h2>📅 Planes de Salud Recomendados ({healthPlans.length})</h2>
                             {healthPlans.map((plan, index) => (
-                                <section key={index} style={{
-                                    backgroundColor: '#e8f5e9',
-                                    border: '2px solid #4caf50',
-                                    padding: '15px',
-                                    marginBottom: '15px',
-                                    borderRadius: '8px',
-                                    color: '#000000'
-                                }}>
+                                <section key={index} className="health-plan-card">
                                     <h3>{plan.name}</h3>
                                     <p><strong>Duración:</strong> {plan.duration}</p>
                                     <p><strong>Actividades recomendadas:</strong></p>
@@ -330,7 +341,7 @@ function HealthPlan(){
                     )}
 
                     {symptoms.length === 0 && (
-                        <section style={{backgroundColor: '#e8f5e9', padding: '15px', borderRadius: '8px', textAlign: 'center'}}>
+                        <section className="excellent-section">
                             <h2>✅ ¡Excelente!</h2>
                             <p>Tus parámetros biométricos están dentro de los rangos normales. Mantén estos hábitos saludables.</p>
                             <p>Recomendaciones generales:</p>

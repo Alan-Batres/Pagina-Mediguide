@@ -1,23 +1,553 @@
 #root {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
+  padding: 0;
+  text-align: center;
+  background-color: #f8f9fa;
+}
+
+/* Header Styles */
+header {
+  background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 4px 15px rgba(0, 102, 204, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+header img {
+  filter: brightness(1.1);
+  height: 120px;
+  width: auto;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+header h2 {
+  margin: 0.5rem 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+header p {
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+  opacity: 1;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 100%;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.header-user-section {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-text {
+  color: #ffffff;
+  font-weight: bold;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.logout-button {
+  padding: 10px 20px;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logout-button:hover {
+  background-color: #b71c1c;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.logout-button:active {
+  transform: translateY(0);
+}
+
+/* Footer Styles */
+footer {
+  background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+  color: white;
+  padding: 2.5rem;
+  margin-top: 3rem;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 15px rgba(0, 102, 204, 0.2);
+}
+
+footer h1 {
+  font-size: 2rem;
+  margin: 1rem 0;
+  font-weight: 700;
+}
+
+footer h2 {
+  font-size: 1.3rem;
+  margin: 1rem 0;
+  font-weight: 600;
+  color: #e8f0ff;
+}
+
+footer h3 {
+  font-size: 1rem;
+  margin: 0.8rem 0 0.3rem 0;
+  font-weight: 600;
+}
+
+footer section {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+footer section p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Button Styles */
+button {
+  background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.8rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
+  background: linear-gradient(135deg, #0052a3 0%, #003d7a 100%);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+}
+
+/* Typography */
+h1 {
+  color: #003d7a;
+  font-size: 2.8rem;
+  line-height: 1.2;
+  margin: 1rem 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+h2 {
+  color: #0052a3;
+  font-size: 2rem;
+  line-height: 1.2;
+  margin: 1rem 0;
+  font-weight: 600;
+}
+
+h3 {
+  color: #0066cc;
+  font-size: 1.5rem;
+  margin: 0.8rem 0;
+  font-weight: 600;
+}
+
+p {
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0.5rem 0;
+}
+
+/* Container Styles */
+.background {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e8f0ff 100%);
   padding: 2rem;
+  border-radius: 15px;
+  margin: 1.5rem 0;
+  min-height: auto;
+}
+
+div > form {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 102, 204, 0.1);
+  margin: 2rem auto;
+  max-width: 600px;
+  text-align: left;
+}
+
+div > form > div {
+  margin-bottom: 1.5rem;
+}
+
+div > form > button {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.health-plan-container {
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  margin: 1.5rem 0;
+  box-shadow: 0 4px 15px rgba(0, 102, 204, 0.1);
+  border-left: 5px solid #0066cc;
+}
+
+.health-plan-container:hover {
+  box-shadow: 0 6px 20px rgba(0, 102, 204, 0.15);
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+/* Card Styles */
+.card {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 1px solid #e8f0ff;
+}
+
+.card:hover {
+  box-shadow: 0 8px 25px rgba(0, 102, 204, 0.15);
+  transform: translateY(-4px);
+}
+
+/* Form Styles */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  margin: 0.5rem 0 1rem 0;
+  border: 2px solid #e0e7ff;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
+  color: #333;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #0066cc;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  color: #0052a3;
+  margin: 1rem 0 0.5rem 0;
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+/* Utility Classes */
+.read-the-docs {
+  color: #888;
+  font-size: 0.85rem;
+  margin-top: 1rem;
+}
+
+.loading {
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #0066cc;
+}
+
+.disclaimer {
+  font-style: italic;
+  color: red;
+  margin: 1rem 0;
+}
+
+.error-message {
+  color: #d32f2f;
+  padding: 1rem;
+  background-color: #ffe6e6;
+  border-radius: 8px;
+  margin: 1rem 0;
+  border-left: 4px solid #d32f2f;
+}
+
+/* Medical Data Section */
+.medical-data-section {
+  background-color: #0066cc;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+}
+
+.medical-data-section h2 {
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
+.medical-data-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.medical-data-item {
+  background-color: rgba(255, 255, 255, 0.15);
+  padding: 1rem;
+  border-radius: 8px;
+  color: white;
+  margin: 0;
+}
+
+.medical-data-item:has(+ .medical-data-detail) {
+  grid-column: 1 / -1;
+}
+
+.medical-data-detail {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  font-size: 0.85rem;
+  grid-column: 1 / -1;
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+.medical-data-item:last-child {
+  grid-column: 1 / -1;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Symptoms Section */
+.symptoms-section {
+  margin-bottom: 2rem;
 }
 
+.symptom-card {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  color: #000;
+}
+
+.symptom-card h3 {
+  margin-top: 0;
+}
+
+.symptom-card ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+  list-style: none;
+}
+
+.symptom-card li {
+  margin: 0.3rem 0;
+}
+
+.symptom-crítico {
+  border: 3px solid #d32f2f;
+  background-color: #ffebee;
+}
+
+.symptom-alto {
+  border: 3px solid #f57c00;
+  background-color: #fff3e0;
+}
+
+.symptom-medio {
+  border: 3px solid #fbc02d;
+  background-color: #fffde7;
+}
+
+.symptom-bajo-medio {
+  border: 3px solid #fbc02d;
+  background-color: #fffde7;
+}
+
+/* Health Plans Section */
+.health-plans-section {
+  margin-bottom: 2rem;
+}
+
+.health-plan-card {
+  background-color: #e8f5e9;
+  border: 2px solid #4caf50;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  color: #000;
+}
+
+.health-plan-card h3 {
+  margin-top: 0;
+  color: #2e7d32;
+}
+
+.health-plan-card ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+  list-style: none;
+}
+
+.health-plan-card li {
+  margin: 0.3rem 0;
+}
+
+/* Excellent Section */
+.excellent-section {
+  background-color: #e8f5e9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  color: #000;
+  border: 2px solid #4caf50;
+}
+
+.excellent-section h2 {
+  color: #2e7d32;
+}
+
+.excellent-section ul {
+  display: inline-block;
+  text-align: left;
+  padding-left: 1.5rem;
+}
+
+/* Legal Info Styles */
+.legal-info-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  z-index: 1000;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.legal-info-header {
+  background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+  color: white;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  position: sticky;
+  top: 0;
+  box-shadow: 0 4px 15px rgba(0, 102, 204, 0.2);
+}
+
+.legal-info-header img {
+  height: 80px;
+  width: auto;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.legal-info-header h1 {
+  color: white;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.close-button {
+  background-color: #d32f2f;
+  padding: 10px 25px;
+  font-size: 0.9rem;
+}
+
+.close-button:hover {
+  background-color: #b71c1c;
+}
+
+.legal-info-content {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.legal-info-content section {
+  margin-bottom: 2rem;
+}
+
+.legal-info-content h2 {
+  color: #0052a3;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #0066cc;
+  padding-bottom: 0.5rem;
+}
+
+.legal-info-content p {
+  color: #333;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+.legal-info-content ul {
+  margin: 1rem 0;
+  padding-left: 2rem;
+  list-style: disc;
+}
+
+.legal-info-content li {
+  color: #333;
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em rgba(0, 102, 204, 0.3));
+}
+
+/* Animations */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -33,16 +563,231 @@
   }
 }
 
-.card {
-  padding: 2em;
+/* Responsive Design */
+/* Auth Component Styles */
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  padding: 20px;
 }
 
-.read-the-docs {
-  color: #888;
+.auth-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
 }
-.Background{
-  background-color: darkred;
+
+.auth-logo {
+  width: 100px;
+  height: auto;
+  display: block;
+  margin: 0 auto 20px;
 }
-.health-plan-container{
-  background-color: darkslategray;
+
+.auth-tagline {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+.auth-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #e0e0e0;
+}
+
+.auth-toggle-btn {
+  flex: 1;
+  padding: 12px;
+  background-color: transparent;
+  color: #333;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.auth-toggle-btn:disabled {
+  cursor: not-allowed;
+}
+
+.auth-message {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.auth-form-group {
+  margin-bottom: 15px;
+}
+
+.auth-label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #333;
+  text-align: left;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.auth-submit-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+  background-color: #0052a3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+.auth-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.auth-submit-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.auth-forgot-password {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.auth-forgot-link {
+  background: none;
+  border: none;
+  color: #0066cc;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.3s ease;
+  font-weight: 500;
+}
+
+.auth-forgot-link:hover {
+  color: #0052a3;
+  text-decoration: underline;
+}
+
+/* Reset Password Component Styles */
+.reset-title {
+  text-align: center;
+  color: #0052a3;
+  margin-bottom: 10px;
+  font-size: 1.8rem;
+  margin-top: 0;
+}
+
+.reset-back-btn {
+  width: 100%;
+  margin-top: 15px;
+  padding: 12px;
+  background-color: #ccc;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.reset-back-btn:hover {
+  background-color: #999;
+}
+
+.reset-back-btn:active {
+  transform: translateY(0);
+}
+
+.reset-code-display {
+  margin-bottom: 1.5rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .card,
+  .health-plan-container {
+    padding: 1.5rem;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  .auth-card {
+    padding: 25px;
+  }
 }

@@ -7,17 +7,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Initialize database on startup
 await initializeDatabase();
 
-// ==================== AUTHENTICATION ENDPOINTS ====================
 
-// Signup endpoint
 app.post('/api/users/signup', async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // Check if username or email already exists
     const checkQuery = `SELECT * FROM users WHERE username = $1 OR email = $2`;
     const checkResult = await pool.query(checkQuery, [username, email]);
 
@@ -26,7 +22,6 @@ app.post('/api/users/signup', async (req, res) => {
       return res.status(400).json({ error: `${existingField} ya está registrado` });
     }
 
-    // Insert new user
     const insertQuery = `
       INSERT INTO users (username, email, password, created_at)
       VALUES ($1, $2, $3, NOW())
@@ -47,12 +42,10 @@ app.post('/api/users/signup', async (req, res) => {
   }
 });
 
-// Login endpoint
 app.post('/api/users/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Find user by username
     const query = `SELECT id, username, password FROM users WHERE username = $1`;
     const result = await pool.query(query, [username]);
 
@@ -62,7 +55,6 @@ app.post('/api/users/login', async (req, res) => {
 
     const user = result.rows[0];
 
-    // Check password (in production, use bcrypt)
     if (user.password !== password) {
       return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
     }
@@ -79,9 +71,117 @@ app.post('/api/users/login', async (req, res) => {
   }
 });
 
-// ==================== MEDICAL DATA ENDPOINTS ====================
+app.post('/api/users/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
 
-// Example endpoint
+    const userQuery = `SELECT id FROM users WHERE email = $1`;
+    const userResult = await pool.query(userQuery, [email]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'No se encontró cuenta con este correo' });
+    }
+
+    const userId = userResult.rows[0].id;
+    const resetCode = Math.random().toString().substring(2, 8);
+    const expiryTime = new Date(Date.now() + 30 * 60 * 1000);
+
+    const updateQuery = `
+      UPDATE users 
+      SET reset_code = $1, reset_code_expiry = $2
+      WHERE id = $3
+    `;
+    await pool.query(updateQuery, [resetCode, expiryTime, userId]);
+
+    console.log(`Reset code sent to ${email}: ${resetCode}`);
+    res.json({ 
+      message: 'Reset code sent to email',
+      resetCode: resetCode
+    });
+  } catch (error) {
+    console.error('Error during forgot password:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/users/verify-reset-code', async (req, res) => {
+  try {
+    const { email, resetCode } = req.body;
+
+    const query = `
+      SELECT id, reset_code, reset_code_expiry FROM users 
+      WHERE email = $1 AND reset_code = $2
+    `;
+    const result = await pool.query(query, [email, resetCode]);
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Código de recuperación inválido' });
+    }
+
+    const user = result.rows[0];
+    const now = new Date();
+
+    if (new Date(user.reset_code_expiry) < now) {
+      return res.status(401).json({ error: 'El código de recuperación ha expirado' });
+    }
+
+    console.log('Reset code verified for user:', user.id);
+    res.json({ 
+      message: 'Reset code verified',
+      userId: user.id
+    });
+  } catch (error) {
+    console.error('Error during code verification:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/users/reset-password', async (req, res) => {
+  try {
+    const { email, resetCode, newPassword } = req.body;
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
+    }
+
+    const verifyQuery = `
+      SELECT id, reset_code_expiry FROM users 
+      WHERE email = $1 AND reset_code = $2
+    `;
+    const verifyResult = await pool.query(verifyQuery, [email, resetCode]);
+
+    if (verifyResult.rows.length === 0) {
+      return res.status(401).json({ error: 'Código de recuperación inválido' });
+    }
+
+    const user = verifyResult.rows[0];
+    const now = new Date();
+
+    if (new Date(user.reset_code_expiry) < now) {
+      return res.status(401).json({ error: 'El código de recuperación ha expirado' });
+    }
+
+    const updateQuery = `
+      UPDATE users 
+      SET password = $1, reset_code = NULL, reset_code_expiry = NULL
+      WHERE email = $2
+      RETURNING id, username
+    `;
+    const result = await pool.query(updateQuery, [newPassword, email]);
+
+    console.log('Password reset for user:', result.rows[0].id);
+    res.json({ 
+      message: 'Contraseña actualizada exitosamente',
+      userId: result.rows[0].id,
+      username: result.rows[0].username
+    });
+  } catch (error) {
+    console.error('Error during password reset:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 app.get('/api/health', async (req, res) => {
   try {
     const result = await pool.query('SELECT NOW()');
@@ -91,20 +191,19 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Store medical information
 app.post('/api/medical-info', async (req, res) => {
   try {
-    const { glucose, oxygenBlood, bloodPressure, temperature, age, height, weight, respiratoryRate, bloodType, heartRate } = req.body;
+    const { glucose, oxygenBlood, bloodPressureSystolic, bloodPressureDiastolic, temperature, age, height, weight, respiratoryRate, bloodType, heartRate, userId } = req.body;
     
-    console.log('Received medical data:', { glucose, oxygenBlood, bloodPressure, temperature, age, height, weight, respiratoryRate, bloodType, heartRate });
+    console.log('Received medical data:', { glucose, oxygenBlood, bloodPressureSystolic, bloodPressureDiastolic, temperature, age, height, weight, respiratoryRate, bloodType, heartRate, userId });
     
     const query = `
-      INSERT INTO medical_records (glucose, oxygen_blood, blood_pressure, temperature, age, height, weight, respiratory_rate, blood_type, heart_rate, created_at)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+      INSERT INTO medical_records (user_id, glucose, oxygen_blood, blood_pressure_systolic, blood_pressure_diastolic, temperature, age, height, weight, respiratory_rate, blood_type, heart_rate, created_at)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
       RETURNING id;
     `;
     
-    const values = [glucose, oxygenBlood, bloodPressure, temperature, age, height, weight, respiratoryRate, bloodType, heartRate];
+    const values = [userId, glucose, oxygenBlood, bloodPressureSystolic, bloodPressureDiastolic, temperature, age, height, weight, respiratoryRate, bloodType, heartRate];
     
     const result = await pool.query(query, values);
     console.log('Medical record saved with ID:', result.rows[0].id);
@@ -115,7 +214,6 @@ app.post('/api/medical-info', async (req, res) => {
   }
 });
 
-// Get latest medical record
 app.get('/api/medical-info/latest', async (req, res) => {
   try {
     const query = `
@@ -139,12 +237,10 @@ app.get('/api/medical-info/latest', async (req, res) => {
   }
 });
 
-// Store user information
 app.post('/api/users', async (req, res) => {
   try {
     const { username, email, password } = req.body;
     
-    // Check if username already exists
     const checkQuery = `SELECT * FROM users WHERE username = $1 OR email = $2`;
     const checkResult = await pool.query(checkQuery, [username, email]);
     

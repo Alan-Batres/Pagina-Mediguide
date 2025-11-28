@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import '../App.css'
+import { medicalDataEmitter } from '../utils/medicalDataContext'
 
 function MedCheck(){
     const [formData, setFormData] = useState({
         glucose: '',
         oxygenBlood: '',
-        bloodPressure: '',
+        bloodPressureSystolic: '',
+        bloodPressureDiastolic: '',
         temperature: '',
         age: '',
         height: '',
@@ -31,23 +33,25 @@ function MedCheck(){
         setMessage('');
 
         try {
-            const response = await fetch('/api/medical-info', {
+            const userId = localStorage.getItem('userId');
+            const response = await fetch('http://localhost:3001/api/medical-info', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({ ...formData, userId })
             });
 
             const data = await response.json();
 
             if (response.ok) {
                 setMessage('¡Información guardada exitosamente!');
-                // Reset form
+                medicalDataEmitter.emit();
                 setFormData({
                     glucose: '',
                     oxygenBlood: '',
-                    bloodPressure: '',
+                    bloodPressureSystolic: '',
+                    bloodPressureDiastolic: '',
                     temperature: '',
                     age: '',
                     height: '',
@@ -82,8 +86,12 @@ function MedCheck(){
                 <input type='number' name='oxygenBlood' id='OxigenBlood' value={formData.oxygenBlood} onChange={handleChange} required/>
             </div>
             <div>
-                <label htmlFor='BloodPres'>Presion Arterial (mmHg)</label>
-                <input type='number' name='bloodPressure' id='Bloodpres' value={formData.bloodPressure} onChange={handleChange} required/>
+                <label htmlFor='BloodPresSystolic'>Presión Arterial Sistólica - (Número superior) (mmHg)</label>
+                <input type='number' name='bloodPressureSystolic' id='BloodPresSystolic' value={formData.bloodPressureSystolic} onChange={handleChange} required/>
+            </div>
+            <div>
+                <label htmlFor='BloodPresDiastolic'>Presión Arterial Diastólica - (Número inferior) (mmHg)</label>
+                <input type='number' name='bloodPressureDiastolic' id='BloodPresDiastolic' value={formData.bloodPressureDiastolic} onChange={handleChange} required/>
             </div>
             <div>
                 <label htmlFor='Temperature'>Temperatura Corporal (C°)</label>
