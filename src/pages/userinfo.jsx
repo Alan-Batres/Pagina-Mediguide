@@ -43,7 +43,6 @@ function UserInfo({ onAuthSuccess }){
 
         try {
             if (isLogin) {
-                // Login
                 const response = await fetch(`${apiUrl}/api/users/login`, {
                     method: 'POST',
                     headers: {
@@ -58,7 +57,6 @@ function UserInfo({ onAuthSuccess }){
                 console.log('Response status:', response.status);
                 console.log('Response ok:', response.ok);
 
-                // Check if response is empty
                 const text = await response.text();
                 console.log('Response text:', text);
 
@@ -80,7 +78,6 @@ function UserInfo({ onAuthSuccess }){
                     console.error('Login error:', data.error);
                 }
             } else {
-                // Signup
                 if (formData.password !== formData.confirmPassword) {
                     setMessage('Las contraseñas no coinciden');
                     setLoading(false);
