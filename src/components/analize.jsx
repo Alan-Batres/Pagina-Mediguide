@@ -1,5 +1,4 @@
 import '../App.css'
-import logo from '../assets/logoMedguide_transparent.png'
 
 function Analize(){
     return(
