@@ -11,6 +11,8 @@ function ResetPassword({ onBack }){
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [displayCode, setDisplayCode] = useState('');
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     useEffect(() => {
         const handlePopState = (event) => {
@@ -31,6 +33,13 @@ function ResetPassword({ onBack }){
         e.preventDefault();
         setLoading(true);
         setMessage('');
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setMessage('Por favor ingresa un correo electrónico válido');
+            setLoading(false);
+            return;
+        }
 
         try {
             const response = await fetch('http://localhost:3001/api/users/forgot-password', {
@@ -119,6 +128,13 @@ function ResetPassword({ onBack }){
                 return;
             }
 
+            const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword);
+            if (!hasSpecialChar) {
+                setMessage('La contraseña debe contener al menos un carácter especial (!@#$%^&* etc.)');
+                setLoading(false);
+                return;
+            }
+
             const response = await fetch('http://localhost:3001/api/users/reset-password', {
                 method: 'POST',
                 headers: {
@@ -161,10 +177,10 @@ function ResetPassword({ onBack }){
                     Donde la salud del usuario es nuestra prioridad
                 </p>
 
-                {message && (
+                {message && step !== 3 && (
                     <p className="auth-message" style={{
-                        color: message.includes('Error') ? '#d32f2f' : '#4CAF50',
-                        backgroundColor: message.includes('Error') ? '#ffebee' : '#e8f5e9'
+                        color: (message.includes('Error') || message.includes('válido')) ? '#d32f2f' : '#4CAF50',
+                        backgroundColor: (message.includes('Error') || message.includes('válido')) ? '#ffebee' : '#e8f5e9'
                     }}>
                         {message}
                     </p>
@@ -257,35 +273,88 @@ function ResetPassword({ onBack }){
 
                 {/* Step 3: New Password */}
                 {step === 3 && (
-                    <form onSubmit={handlePasswordSubmit}>
+                    <>
+                        {message && (
+                            <p className="auth-message" style={{
+                                color: (message.includes('Error') || message.includes('no coinciden') || message.includes('menos') || message.includes('especial')) ? '#d32f2f' : '#4CAF50',
+                                backgroundColor: (message.includes('Error') || message.includes('no coinciden') || message.includes('menos') || message.includes('especial')) ? '#ffebee' : '#e8f5e9'
+                            }}>
+                                {message}
+                            </p>
+                        )}
+                        <form onSubmit={handlePasswordSubmit}>
                         <div className="auth-form-group">
                             <label htmlFor='NewPassword' className="auth-label">
                                 Nueva Contraseña
                             </label>
-                            <input
-                                type='password'
-                                id='NewPassword'
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                required
-                                className="auth-input"
-                                placeholder='Ingresa tu nueva contraseña'
-                            />
+                            <div style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                                <input
+                                    type={showNewPassword ? 'text' : 'password'}
+                                    id='NewPassword'
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    required
+                                    className="auth-input"
+                                    placeholder='Ingresa tu nueva contraseña'
+                                    style={{flex: 1}}
+                                />
+                                <button
+                                    type='button'
+                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                    style={{
+                                        padding: '0.6rem 0.8rem',
+                                        backgroundColor: '#0066cc',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        fontSize: '0.85rem',
+                                        fontWeight: 'bold',
+                                        transition: 'background-color 0.3s ease'
+                                    }}
+                                    onMouseEnter={(e) => e.target.style.backgroundColor = '#0052a3'}
+                                    onMouseLeave={(e) => e.target.style.backgroundColor = '#0066cc'}
+                                >
+                                    {showNewPassword ? 'Ocultar' : 'Mostrar'}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="auth-form-group">
                             <label htmlFor='ConfirmNewPassword' className="auth-label">
                                 Confirmar Contraseña
                             </label>
-                            <input
-                                type='password'
-                                id='ConfirmNewPassword'
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                required
-                                className="auth-input"
-                                placeholder='Confirma tu nueva contraseña'
-                            />
+                            <div style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                                <input
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    id='ConfirmNewPassword'
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    required
+                                    className="auth-input"
+                                    placeholder='Confirma tu nueva contraseña'
+                                    style={{flex: 1}}
+                                />
+                                <button
+                                    type='button'
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    style={{
+                                        padding: '0.6rem 0.8rem',
+                                        backgroundColor: '#0066cc',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        fontSize: '0.85rem',
+                                        fontWeight: 'bold',
+                                        transition: 'background-color 0.3s ease'
+                                    }}
+                                    onMouseEnter={(e) => e.target.style.backgroundColor = '#0052a3'}
+                                    onMouseLeave={(e) => e.target.style.backgroundColor = '#0066cc'}
+                                >
+                                    {showConfirmPassword ? 'Ocultar' : 'Mostrar'}
+                                </button>
+                            </div>
                         </div>
 
                         <button
@@ -298,7 +367,8 @@ function ResetPassword({ onBack }){
                         >
                             {loading ? 'Actualizando...' : 'Actualizar Contraseña'}
                         </button>
-                    </form>
+                        </form>
+                    </>
                 )}
 
                 {/* Back Button */}

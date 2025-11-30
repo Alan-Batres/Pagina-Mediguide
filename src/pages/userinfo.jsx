@@ -6,6 +6,8 @@ import ResetPassword from './resetpassword';
 function UserInfo({ onAuthSuccess }){
     const [isLogin, setIsLogin] = useState(true);
     const [showReset, setShowReset] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -78,6 +80,13 @@ function UserInfo({ onAuthSuccess }){
                     console.error('Login error:', data.error);
                 }
             } else {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(formData.email)) {
+                    setMessage('Por favor ingresa un correo electrónico válido');
+                    setLoading(false);
+                    return;
+                }
+
                 if (formData.password !== formData.confirmPassword) {
                     setMessage('Las contraseñas no coinciden');
                     setLoading(false);
@@ -172,8 +181,8 @@ function UserInfo({ onAuthSuccess }){
                         {/* Message */}
                         {message && (
                             <p className="auth-message" style={{
-                                color: message.includes('Error') ? '#d32f2f' : '#4CAF50',
-                                backgroundColor: message.includes('Error') ? '#ffebee' : '#e8f5e9'
+                                color: (message.includes('Error') || message.includes('no coinciden') || message.includes('válido')) ? '#d32f2f' : '#4CAF50',
+                                backgroundColor: (message.includes('Error') || message.includes('no coinciden') || message.includes('válido')) ? '#ffebee' : '#e8f5e9'
                             }}>
                                 {message}
                             </p>
@@ -219,16 +228,38 @@ function UserInfo({ onAuthSuccess }){
                                 <label htmlFor='Password' className="auth-label">
                                     Contraseña
                                 </label>
-                                <input
-                                    type='password'
-                                    name='password'
-                                    id='Password'
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    required
-                                    className="auth-input"
-                                    placeholder='Ingresa tu contraseña'
-                                ></input>
+                                <div style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        name='password'
+                                        id='Password'
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        required
+                                        className="auth-input"
+                                        placeholder='Ingresa tu contraseña'
+                                        style={{flex: 1}}
+                                    ></input>
+                                    <button
+                                        type='button'
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        style={{
+                                            padding: '0.6rem 0.8rem',
+                                            backgroundColor: '#0066cc',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontSize: '0.85rem',
+                                            fontWeight: 'bold',
+                                            transition: 'background-color 0.3s ease'
+                                        }}
+                                        onMouseEnter={(e) => e.target.style.backgroundColor = '#0052a3'}
+                                        onMouseLeave={(e) => e.target.style.backgroundColor = '#0066cc'}
+                                    >
+                                        {showPassword ? 'Ocultar' : 'Mostrar'}
+                                    </button>
+                                </div>
                             </div>
 
                             {!isLogin && (
@@ -236,16 +267,38 @@ function UserInfo({ onAuthSuccess }){
                                     <label htmlFor='ConfirmPassword' className="auth-label">
                                         Confirmar Contraseña
                                     </label>
-                                    <input
-                                        type='password'
-                                        name='confirmPassword'
-                                        id='ConfirmPassword'
-                                        value={formData.confirmPassword}
-                                        onChange={handleChange}
-                                        required={!isLogin}
-                                        className="auth-input"
-                                        placeholder='Confirma tu contraseña'
-                                    ></input>
+                                    <div style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                                        <input
+                                            type={showConfirmPassword ? 'text' : 'password'}
+                                            name='confirmPassword'
+                                            id='ConfirmPassword'
+                                            value={formData.confirmPassword}
+                                            onChange={handleChange}
+                                            required={!isLogin}
+                                            className="auth-input"
+                                            placeholder='Confirma tu contraseña'
+                                            style={{flex: 1}}
+                                        ></input>
+                                        <button
+                                            type='button'
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            style={{
+                                                padding: '0.6rem 0.8rem',
+                                                backgroundColor: '#0066cc',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '4px',
+                                                cursor: 'pointer',
+                                                fontSize: '0.85rem',
+                                                fontWeight: 'bold',
+                                                transition: 'background-color 0.3s ease'
+                                            }}
+                                            onMouseEnter={(e) => e.target.style.backgroundColor = '#0052a3'}
+                                            onMouseLeave={(e) => e.target.style.backgroundColor = '#0066cc'}
+                                        >
+                                            {showConfirmPassword ? 'Ocultar' : 'Mostrar'}
+                                        </button>
+                                    </div>
                                 </div>
                             )}
 

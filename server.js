@@ -216,19 +216,26 @@ app.post('/api/medical-info', async (req, res) => {
 
 app.get('/api/medical-info/latest', async (req, res) => {
   try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'userId is required' });
+    }
+
     const query = `
       SELECT * FROM medical_records
+      WHERE user_id = $1
       ORDER BY created_at DESC
       LIMIT 1;
     `;
     
-    const result = await pool.query(query);
+    const result = await pool.query(query, [userId]);
     console.log('Query result:', result.rows);
     
     if (result.rows.length > 0) {
       res.json(result.rows[0]);
     } else {
-      console.log('No medical records found in database');
+      console.log('No medical records found for user:', userId);
       res.status(404).json({ error: 'No medical records found' });
     }
   } catch (error) {

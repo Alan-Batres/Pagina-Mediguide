@@ -31,18 +31,21 @@ function HealthPlan(){
             console.log('Response status:', response.status);
             console.log('Response data:', data);
             
-            if (response.ok && data && Object.keys(data).length > 0) {
+            if (response.ok) {
                 console.log('Medical data received:', data);
                 setMedicalData(data);
                 analyzeHealth(data);
+                setError('');
                 setLoading(false);
             } else {
-                console.log('No valid data received');
+                console.log('No valid data received - status:', response.status);
+                setMedicalData(null);
                 setError('No hay datos médicos registrados. Por favor, completa el formulario de chequeo médico.');
                 setLoading(false);
             }
         } catch (err) {
             console.error('Error fetching medical data:', err);
+            setMedicalData(null);
             setError('Error al obtener datos médicos: ' + err.message);
             setLoading(false);
         }

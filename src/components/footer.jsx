@@ -1,29 +1,59 @@
 import '../App.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import logo from '../assets/logoMedguide_transparent.png'
 import LegalInfo from '../pages/legalinfo'
 
 function Footer(){
     const [showLegalInfo, setShowLegalInfo] = useState(false);
 
+    useEffect(() => {
+        const handlePopState = (event) => {
+            if (showLegalInfo) {
+                event.preventDefault();
+                setShowLegalInfo(false);
+                window.history.forward();
+            }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+        
+        if (showLegalInfo) {
+            window.history.pushState(null, null, window.location.href);
+        }
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, [showLegalInfo]);
+
+    const handleOpenModal = (setModal) => {
+        window.history.pushState(null, null, window.location.href);
+        setModal(true);
+    };
+
+    const handleCloseModal = (setModal) => {
+        setModal(false);
+        window.history.back();
+    };
+
     return(
         <>
-            {showLegalInfo && <LegalInfo onClose={() => setShowLegalInfo(false)} />}
-            <div>
-                <img src={logo} alt='Mediguide Logo'/>
-                <h1>Centro Médico del Bosque</h1>
-                <h2>Comunicate con Nosotros</h2>
-                <button type='button'>Dudas y Sugerencias</button>
-                <button type='button' onClick={() => setShowLegalInfo(true)}>Información Legal</button>
-                <section>
-                    <h3>Correo Electrónico</h3>
-                    <p>hola@sitioincreible.com</p>
-                </section>
-                <section>
-                    <h3>Teléfono</h3>
-                    <p>(55) 1234 5678</p>
-                </section>
-            </div>
+            {showLegalInfo && <LegalInfo onClose={() => handleCloseModal(setShowLegalInfo)} />}
+            <footer>
+                <div className="footer-content">
+                    <img src={logo} alt='Mediguide Logo'/>
+                    <h1>Comunicate con Nosotros</h1>
+                    <section>
+                        <h3>Correo Electrónico</h3>
+                        <p>mediguide05@gmail.com</p>
+                    </section>
+                    <section>
+                        <h3>Teléfono</h3>
+                        <p>(614) 609 7295</p>
+                    </section>
+                    <button type='button' onClick={() => handleOpenModal(setShowLegalInfo)}>Información Legal</button>
+                </div>
+            </footer>
         </>
     )
 }

@@ -6,7 +6,6 @@
   background-color: #f8f9fa;
 }
 
-/* Header Styles */
 header {
   background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
   color: white;
@@ -86,49 +85,67 @@ header p {
   transform: translateY(0);
 }
 
-/* Footer Styles */
 footer {
-  background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
-  color: white;
+  background: white;
+  color: #0066cc;
   padding: 2.5rem;
   margin-top: 3rem;
   border-radius: 20px 20px 0 0;
   box-shadow: 0 -4px 15px rgba(0, 102, 204, 0.2);
 }
 
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-content img {
+  height: 350px;
+  width: auto;
+  background-color: transparent;
+  padding: 8px;
+  border-radius: 8px;
+}
+
 footer h1 {
   font-size: 2rem;
-  margin: 1rem 0;
+  margin: 0 0 1rem 0;
   font-weight: 700;
+  text-align: center;
+  color: #0052a3;
 }
 
 footer h2 {
   font-size: 1.3rem;
   margin: 1rem 0;
   font-weight: 600;
-  color: #e8f0ff;
+  color: #0052a3;
 }
 
 footer h3 {
   font-size: 1rem;
   margin: 0.8rem 0 0.3rem 0;
   font-weight: 600;
+  color: #0066cc;
 }
 
 footer section {
   margin: 1.5rem 0;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: transparent;
   border-radius: 12px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: none;
 }
 
 footer section p {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #0066cc;
 }
 
-/* Button Styles */
 button {
   background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
   color: white;
@@ -153,7 +170,6 @@ button:active {
   box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
 }
 
-/* Typography */
 h1 {
   color: #003d7a;
   font-size: 2.8rem;
@@ -185,7 +201,6 @@ p {
   margin: 0.5rem 0;
 }
 
-/* Container Styles */
 .background {
   background: linear-gradient(135deg, #f8f9fa 0%, #e8f0ff 100%);
   padding: 2rem;
@@ -228,7 +243,6 @@ div > form > button {
   transition: all 0.3s ease;
 }
 
-/* Card Styles */
 .card {
   background: white;
   padding: 2rem;
@@ -243,7 +257,6 @@ div > form > button {
   transform: translateY(-4px);
 }
 
-/* Form Styles */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -284,7 +297,6 @@ label {
   text-align: left;
 }
 
-/* Utility Classes */
 .read-the-docs {
   color: #888;
   font-size: 0.85rem;
@@ -312,7 +324,6 @@ label {
   border-left: 4px solid #d32f2f;
 }
 
-/* Medical Data Section */
 .medical-data-section {
   background-color: #0066cc;
   padding: 2rem;
@@ -358,7 +369,6 @@ label {
   text-align: center;
 }
 
-/* Symptoms Section */
 .symptoms-section {
   margin-bottom: 2rem;
 }
@@ -404,7 +414,6 @@ label {
   background-color: #fffde7;
 }
 
-/* Health Plans Section */
 .health-plans-section {
   margin-bottom: 2rem;
 }
@@ -453,7 +462,6 @@ label {
   padding-left: 1.5rem;
 }
 
-/* Legal Info Styles */
 .legal-info-container {
   position: fixed;
   top: 0;
@@ -547,7 +555,6 @@ label {
   filter: drop-shadow(0 0 2em rgba(0, 102, 204, 0.3));
 }
 
-/* Animations */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -563,8 +570,6 @@ label {
   }
 }
 
-/* Responsive Design */
-/* Auth Component Styles */
 .auth-container {
   min-height: 100vh;
   display: flex;
@@ -707,7 +712,6 @@ label {
   text-decoration: underline;
 }
 
-/* Reset Password Component Styles */
 .reset-title {
   text-align: center;
   color: #0052a3;
@@ -752,6 +756,19 @@ label {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.suggestions-content {
+  text-align: center;
+  padding: 2rem;
+}
+
+.suggestions-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 102, 204, 0.2);
+  margin-bottom: 2rem;
 }
 
 @media (max-width: 768px) {
